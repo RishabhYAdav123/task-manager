@@ -1,23 +1,36 @@
-# Team Task Manager
+# 🚀 Team Task Manager
 
-## 🚀 Features
-- User Authentication (Admin & Member)
-- Role-Based Access Control
-- Project Management
-- Task Assignment & Tracking
-- Dashboard with task statistics
+A full-stack web application to manage projects and tasks with role-based access control.
+
+---
+
+## ✨ Features
+- 🔐 Authentication (Admin & Member)
+- 👥 Role-Based Access Control
+- 📁 Project Management
+- ✅ Task Assignment & Tracking
+- 📊 Dashboard with statistics
+
+---
 
 ## 🛠 Tech Stack
-- Flask
-- SQLite
-- HTML, CSS
+- Backend: Flask
+- Database: SQLite
+- Frontend: HTML, CSS
+
+---
 
 ## 🌐 Live Demo
-https://web-production-39e5d.up.railway.app
+👉 https://web-production-39e5d.up.railway.app
 
-## 📂 GitHub Repo
-https://github.com/RishabhYAdav123/task-manager
+---
 
-## ▶️ How to Run Locally
-pip install -r requirements.txt
+## 📸 Screenshots
+<img width="922" height="652" alt="image" src="https://github.com/user-attachments/assets/5d4c112d-29ed-4704-9837-b1979308637a" />
+
+
+---
+
+## ▶️ How to Run
+pip install -r requirements.txt  
 python app.py
