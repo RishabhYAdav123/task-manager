@@ -1,0 +1,82 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to right, #667eea, #764ba2);
+    margin: 0;
+    padding: 0;
+}
+
+/* Container */
+.container {
+    width: 500px;
+    margin: 50px auto;
+    padding: 25px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+}
+
+/* Headings */
+h2 {
+    text-align: center;
+    color: #333;
+}
+
+h3 {
+    color: #555;
+    margin-top: 20px;
+}
+
+/* Inputs */
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+/* Buttons */
+button {
+    width: 100%;
+    padding: 10px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover {
+    background: #5a67d8;
+}
+
+/* Tasks */
+.task {
+    background: #f9f9f9;
+    padding: 10px;
+    border-radius: 6px;
+    margin: 8px 0;
+}
+
+/* Status colors */
+.todo {
+    border-left: 5px solid #f39c12;
+}
+
+.progress {
+    border-left: 5px solid #3498db;
+}
+
+.done {
+    border-left: 5px solid #2ecc71;
+}
+
+/* Logout */
+a {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    color: red;
+    text-decoration: none;
+}

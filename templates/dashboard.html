@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="container">
+
+<h2>Dashboard ({{ role }})</h2>
+
+<p>Total: {{ total }} | Completed: {{ completed }} | Overdue: {{ overdue }}</p>
+
+{% if role == 'admin' %}
+<h3>Create Project</h3>
+<form method="POST" action="/create_project">
+    <input name="name" placeholder="Project name" required>
+    <button>Create Project</button>
+</form>
+
+<h3>Create Task</h3>
+<form method="POST" action="/create_task">
+    <input name="title" placeholder="Title" required>
+    <input name="description" placeholder="Description" required>
+
+    <select name="assigned_to">
+        {% for user in users %}
+        <option value="{{ user.id }}">{{ user.name }}</option>
+        {% endfor %}
+    </select>
+
+    <select name="project_id">
+        {% for project in projects %}
+        <option value="{{ project.id }}">{{ project.name }}</option>
+        {% endfor %}
+    </select>
+
+    <input type="date" name="deadline">
+    <button>Create Task</button>
+</form>
+{% endif %}
+
+<h3>Tasks</h3>
+
+<ul>
+{% for task in tasks %}
+    <li class="task">
+        <b>{{ task.title }}</b> ({{ task.status }}) <br>
+
+        {% if role == 'member' %}
+        <form method="POST" action="/update_task/{{ task.id }}">
+            <select name="status">
+                <option>Todo</option>
+                <option>In Progress</option>
+                <option>Done</option>
+            </select>
+            <button>Update</button>
+        </form>
+        {% endif %}
+    </li>
+{% endfor %}
+</ul>
+
+<a href="/logout">Logout</a>
+
+</div>
+
+</body>
+</html>
