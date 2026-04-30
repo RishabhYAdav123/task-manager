@@ -21,6 +21,7 @@ class Task(db.Model):
     title = db.Column(db.String(100))
     description = db.Column(db.Text)
     status = db.Column(db.String(20))
+    priority = db.Column(db.String(20), default="Medium")
     assigned_to = db.Column(db.Integer)
     project_id = db.Column(db.Integer)
     deadline = db.Column(db.DateTime)

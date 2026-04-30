@@ -1,70 +1,173 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
 
-<div class="container">
+<main class="app-shell">
+    <header class="topbar">
+        <div>
+            <p class="eyebrow">Workspace</p>
+            <h1>Dashboard</h1>
+            <p class="muted">Signed in as {{ role }}</p>
+        </div>
+        <a class="logout-link" href="/logout">Logout</a>
+    </header>
 
-<h2>Dashboard ({{ role }})</h2>
-
-<p>Total: {{ total }} | Completed: {{ completed }} | Overdue: {{ overdue }}</p>
-
-{% if role == 'admin' %}
-<h3>Create Project</h3>
-<form method="POST" action="/create_project">
-    <input name="name" placeholder="Project name" required>
-    <button>Create Project</button>
-</form>
-
-<h3>Create Task</h3>
-<form method="POST" action="/create_task">
-    <input name="title" placeholder="Title" required>
-    <input name="description" placeholder="Description" required>
-
-    <select name="assigned_to">
-        {% for user in users %}
-        <option value="{{ user.id }}">{{ user.name }}</option>
-        {% endfor %}
-    </select>
-
-    <select name="project_id">
-        {% for project in projects %}
-        <option value="{{ project.id }}">{{ project.name }}</option>
-        {% endfor %}
-    </select>
-
-    <input type="date" name="deadline">
-    <button>Create Task</button>
-</form>
-{% endif %}
-
-<h3>Tasks</h3>
-
-<ul>
-{% for task in tasks %}
-    <li class="task">
-        <b>{{ task.title }}</b> ({{ task.status }}) <br>
-
-        {% if role == 'member' %}
-        <form method="POST" action="/update_task/{{ task.id }}">
-            <select name="status">
-                <option>Todo</option>
-                <option>In Progress</option>
-                <option>Done</option>
-            </select>
-            <button>Update</button>
-        </form>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="messages">
+                {% for category, message in messages %}
+                    <p class="message {{ category }}">{{ message }}</p>
+                {% endfor %}
+            </div>
         {% endif %}
-    </li>
-{% endfor %}
-</ul>
+    {% endwith %}
 
-<a href="/logout">Logout</a>
+    <section class="summary-grid">
+        <article class="summary-card">
+            <span>Total Tasks</span>
+            <strong>{{ total }}</strong>
+        </article>
+        <article class="summary-card">
+            <span>Completed</span>
+            <strong>{{ completed }}</strong>
+        </article>
+        <article class="summary-card danger">
+            <span>Overdue</span>
+            <strong>{{ overdue }}</strong>
+        </article>
+    </section>
 
-</div>
+    {% if role == 'admin' %}
+    <section class="workspace-grid">
+        <div class="panel">
+            <h2>Create Project</h2>
+            <form method="POST" action="/create_project" class="form-stack">
+                <label for="project-name">Project name</label>
+                <input id="project-name" name="name" placeholder="Website redesign" required>
+                <button>Create Project</button>
+            </form>
+        </div>
+
+        <div class="panel">
+            <h2>Create Task</h2>
+            <form method="POST" action="/create_task" class="form-stack">
+                <label for="task-title">Title</label>
+                <input id="task-title" name="title" placeholder="Prepare sprint plan" required>
+
+                <label for="task-description">Description</label>
+                <input id="task-description" name="description" placeholder="Add the key task details" required>
+
+                <label for="assigned-to">Assigned to</label>
+                <select id="assigned-to" name="assigned_to" required>
+                    {% for user in users %}
+                    <option value="{{ user.id }}">{{ user.name }}</option>
+                    {% endfor %}
+                </select>
+
+                <label for="project-id">Project</label>
+                <select id="project-id" name="project_id" required>
+                    {% for project in projects %}
+                    <option value="{{ project.id }}">{{ project.name }}</option>
+                    {% endfor %}
+                </select>
+
+                <label for="priority">Priority</label>
+                <select id="priority" name="priority" required>
+                    {% for priority in priorities %}
+                    <option value="{{ priority }}">{{ priority }}</option>
+                    {% endfor %}
+                </select>
+
+                <label for="deadline">Deadline</label>
+                <input id="deadline" type="date" name="deadline">
+
+                <button>Create Task</button>
+            </form>
+        </div>
+    </section>
+    {% endif %}
+
+    <section class="panel tasks-panel">
+        <div class="section-heading">
+            <div>
+                <h2>Tasks</h2>
+                <p class="muted">Filter by status or priority to focus your board.</p>
+            </div>
+        </div>
+
+        <form method="GET" action="/dashboard" class="filters">
+            <div>
+                <label for="status-filter">Status</label>
+                <select id="status-filter" name="status">
+                    <option value="All">All statuses</option>
+                    {% for status in statuses %}
+                    <option value="{{ status }}" {% if status_filter == status %}selected{% endif %}>{{ status }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label for="priority-filter">Priority</label>
+                <select id="priority-filter" name="priority">
+                    <option value="All">All priorities</option>
+                    {% for priority in priorities %}
+                    <option value="{{ priority }}" {% if priority_filter == priority %}selected{% endif %}>{{ priority }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button>Apply Filters</button>
+        </form>
+
+        <div class="task-list">
+            {% for task in tasks %}
+                {% set overdue_task = task.deadline and task.deadline < now and task.status != 'Done' %}
+                <article class="task-card {% if overdue_task %}is-overdue{% endif %}">
+                    <div class="task-main">
+                        <div>
+                            <h3>{{ task.title }}</h3>
+                            <p>{{ task.description }}</p>
+                        </div>
+                        <div class="badge-row">
+                            <span class="status-pill status-{{ task.status|lower|replace(' ', '-') }}">{{ task.status }}</span>
+                            <span class="priority-pill priority-{{ task.priority|default('Medium')|lower }}">{{ task.priority|default('Medium') }}</span>
+                            {% if overdue_task %}
+                            <span class="overdue-pill">Overdue</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="task-meta">
+                        <span>Deadline: {{ task.deadline.strftime('%d %b %Y') if task.deadline else 'No deadline' }}</span>
+                    </div>
+
+                    {% if role == 'member' %}
+                    <form method="POST" action="/update_task/{{ task.id }}" class="status-form">
+                        <label for="status-{{ task.id }}">Update status</label>
+                        <select id="status-{{ task.id }}" name="status" required>
+                            {% for status in statuses %}
+                            <option value="{{ status }}" {% if task.status == status %}selected{% endif %}>{{ status }}</option>
+                            {% endfor %}
+                        </select>
+                        <button>Update</button>
+                    </form>
+                    {% endif %}
+                </article>
+            {% else %}
+                <div class="empty-state">
+                    <h3>No tasks found</h3>
+                    <p>Try changing your filters or create a new task.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+</main>
 
 </body>
 </html>
